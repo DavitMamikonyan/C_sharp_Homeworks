@@ -1,0 +1,97 @@
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Linq;
+
+namespace Reg;
+
+{
+    public partial class MainWindow : Window
+    {
+        struct Person
+        {
+            public int Id;
+            public string Name;
+            public int Age;
+            public string Address;
+        }
+
+        private Person[] people = new Person[100];
+        private int count = 0;
+        private int idCounter = 1;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void AddPerson(string name, int age, string address)
+        {
+            if (count < people.Length)
+            {
+                people[count] = new Person { Id = idCounter++, Name = name, Age = age, Address = address };
+                count++;
+            }
+        }
+
+        private string ListPeople()
+        {
+            return string.Join("\n", people.Take(count).Select(p => $"ID: {p.Id}, Name: {p.Name}, Age: {p.Age}, Address: {p.Address}"));
+        }
+
+        private string SearchByName(string name)
+        {
+            var result = people.Take(count).Where(p => p.Name == name);
+            return string.Join("\n", result.Select(p => $"ID: {p.Id}, Name: {p.Name}, Age: {p.Age}, Address: {p.Address}"));
+        }
+
+        private string SearchByAge(int age)
+        {
+            var result = people.Take(count).Where(p => p.Age == age);
+            return string.Join("\n", result.Select(p => $"ID: {p.Id}, Name: {p.Name}, Age: {p.Age}, Address: {p.Address}"));
+        }
+
+        private void SortByAge()
+        {
+            Array.Sort(people, 0, count, Comparer<Person>.Create((a, b) => a.Age.CompareTo(b.Age)));
+        }
+
+        private void SortByName()
+        {
+            Array.Sort(people, 0, count, Comparer<Person>.Create((a, b) => a.Name.CompareTo(b.Name)));
+        }
+
+        private void RemoveByName(string name)
+        {
+            int index = Array.IndexOf(people, people.Take(count).FirstOrDefault(p => p.Name == name));
+            if (index != -1)
+            {
+                for (int i = index; i < count - 1; i++)
+                {
+                    people[i] = people[i + 1];
+                }
+                count--;
+            }
+        }
+
+        private void RemoveByAge(int age)
+        {
+            int index = Array.IndexOf(people, people.Take(count).FirstOrDefault(p => p.Age == age));
+            if (index != -1)
+            {
+                for (int i = index; i < count - 1; i++)
+                {
+                    people[i] = people[i + 1];
+                }
+                count--;
+            }
+        }
+    }
+}
